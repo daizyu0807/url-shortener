@@ -1,5 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const exphbs = require('express-handlebars')
 const app = express()
 const PORT = 3000
 
@@ -14,8 +15,14 @@ db.on('error', () => {
 db.once('open', () => {
   console.log('mongodb connected')
 })
+
+// 設定 handlebars
+app.engine('hbs', exphbs.engine({ defaultLayout: 'main', extname: '.hbs'})) // 建立 hbs 模版並引入參數
+app.set('view engine', 'hbs') // 啟用樣板引擎 hbs
+
+// 首頁路由
 app.get('/', (req, res) => {
-  res.send('index test')
+  res.render('index')
 })
 
 app.listen(PORT, () => {
