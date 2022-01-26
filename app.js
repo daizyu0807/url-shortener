@@ -1,8 +1,9 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const exphbs = require('express-handlebars')
+
 const bodyParser = require('body-parser')
-const copyUrl = require('./utils/copy')
+
 const app = express()
 const PORT = 3000
 
@@ -10,6 +11,7 @@ const urlMd = require('./models/urlMd') // 載入 shortener model
 const shortenUrl = require('./utils/shortenUrl')
 
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.static('public'))
 
 // 設定資料庫路徑
 mongoose.connect('mongodb://localhost/url-shortener')
