@@ -1,8 +1,15 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const exphbs = require('express-handlebars')
+const bodyParser = require('body-parser')
+const copyUrl = require('./utils/copy')
 const app = express()
 const PORT = 3000
+
+const urlMd = require('./models/urlMd') // 載入 shortener model
+const shortenUrl = require('./utils/shortenUrl')
+
+app.use(bodyParser.urlencoded({ extended: true }))
 
 // 設定資料庫路徑
 mongoose.connect('mongodb://localhost/url-shortener')
@@ -24,6 +31,34 @@ app.set('view engine', 'hbs') // 啟用樣板引擎 hbs
 app.get('/', (req, res) => {
   res.render('index')
 })
+
+
+// 點擊縮址路由
+app.post('/', (req, res) => {
+  if (!req.body.url) return res.redirect("/")
+  const shortUrl = shortenUrl(5) // 產生隨機5碼 URL code
+
+  urlMd.findOne({ oriUrl: req.body.url }) // 查詢資料庫是否曾收錄輸入網址
+    .then(data => { // 輸入網址不存在則新增 輸入網址、縮址 
+      return data ? data : urlMd.create({ oriUrl: req.body.url, shortUrl })
+    })
+    
+    .then(data =>
+      res.render('index', {
+        oriUrl: req.body.url,
+        shortUrl: data.shortUrl
+      })
+    ) 
+    .catch(error => console.error(error)) //錯誤處理
+})
+
+app.post('/:url', (req, res) => {``
+  const oriUrl = req.params.oriUrl
+  return Shortener.find(oriUrl)
+    .lean()
+    .then
+})
+  
 
 app.listen(PORT, () => {
   console.log(`url-shortener is running on http://localhost:${PORT}`)
