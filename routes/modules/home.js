@@ -11,7 +11,9 @@ router.get('/', (req, res) => {
 
 // 點擊縮址路由
 router.post('/', (req, res) => {
-  if (!req.body.url) return res.redirect("/")
+  if (!req.body.url) {
+    return res.redirect("/")
+  }
   const shortUrl = shortenUrl(5) // 產生隨機5碼 URL code
 
   urlMd.findOne({ oriUrl: req.body.url }) // 查詢資料庫是否曾收錄輸入網址
