@@ -47,6 +47,7 @@ app.post('/', (req, res) => {
     
     .then(data =>
       res.render('index', {
+        basicUrl: req.headers.origin,
         oriUrl: req.body.url,
         shortUrl: data.shortUrl
       })
@@ -54,13 +55,20 @@ app.post('/', (req, res) => {
     .catch(error => console.error(error)) //錯誤處理
 })
 
-app.post('/:url', (req, res) => {``
-  const oriUrl = req.params.oriUrl
-  return Shortener.find(oriUrl)
-    .lean()
-    .then
+app.get('/:short_Url', (req, res) => {``
+  const short_Url = req.params.short_Url 
+  return urlMd.findOne({ shortUrl: short_Url }) // params 與 資料庫分別儲存 short_Url、shortUrl，需分別處理
+    .then(item => {
+      if (!item) {
+        return res.render('index', {
+        errorMsg: "Can't found the URL",
+        errorURL: req.headers.origin + "/" + short_Url,
+        })
+      }
+      res.redirect(item.oriUrl)
+    })
+    .catch(error => console.error(error))
 })
-  
 
 app.listen(PORT, () => {
   console.log(`url-shortener is running on http://localhost:${PORT}`)
