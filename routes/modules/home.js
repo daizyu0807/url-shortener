@@ -28,17 +28,20 @@ router.post('/', (req, res) => {
         shortUrl: data.shortUrl
       })
     ) 
-    .catch(error => console.error(error)) //錯誤處理
+    .catch(error => {
+      console.error(error) 
+      res.render('index', { errorMsg: "There is a problem with the function, please contact the administrator" }) // 功能錯誤提示使用者
+    })
 })
 
 router.get('/:short_Url', (req, res) => {``
   const short_Url = req.params.short_Url 
+  console.log(req.headers.host)
   return urlMd.findOne({ shortUrl: short_Url }) // params 與 資料庫分別儲存 short_Url、shortUrl，需分別處理
     .then(item => {
       if (!item) {
         return res.render('index', {
-        errorMsg: "Can't found the URL",
-        errorURL: req.headers.origin + "/" + short_Url,
+        errorMsg: "Can't found URL \"" + req.headers.host + "/" + short_Url + "\""// 錯誤訊息提供使用者
         })
       }
       res.redirect(item.oriUrl)
