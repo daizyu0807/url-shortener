@@ -1,6 +1,6 @@
 module.exports = function shortenUrl(number) {
   const baseChar = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-  const MAX = 61
+  const MAX = 9
   const MIN = 0
   let result = ""
 
@@ -9,7 +9,6 @@ module.exports = function shortenUrl(number) {
     const chooseChar = baseChar[randomIndex]
     result += chooseChar
   }
-
   return result
 }
 
