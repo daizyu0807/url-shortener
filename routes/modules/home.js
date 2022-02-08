@@ -3,7 +3,6 @@ const router = express.Router()
 
 const urlMd = require('../../models/urlMd') // 載入 shortener model
 const shortenUrl = require('../../utils/shortenUrl')
-const urlArray = [] // 已使用 url code 
 
 // 首頁路由
 router.get('/', (req, res) => {
@@ -15,17 +14,21 @@ router.post('/', (req, res) => {
   if (!req.body.url) {
     return res.redirect("/")
   }
-
+  let urlArray = [] // 宣告已使用的 shortUrl 陣列
+  urlMd.find() // 從資料庫找出已使用的 shortUrl
+    .then(data => {
+      data.forEach(URL => urlArray.push(URL.shortUrl))
+      return urlArray
+    })
   urlMd.findOne({ oriUrl: req.body.url }) // 查詢資料庫是否曾收錄輸入網址
     .then(data => { // 輸入網址不存在則新增 輸入網址、縮址 
       if (data) {
         return data
       } else {
-        const shortUrl = shortenUrl(5) // 產出 url code
+        let shortUrl = shortenUrl(5) // 產出 url code
         while (urlArray.includes(shortUrl)) { // 檢查 url code 是否重複
           shortUrl = shortenUrl(5)
         }
-        urlArray.push(shortUrl) // 將為使用過的 url code 加入 已使用 rul code array
         return urlMd.create({ oriUrl: req.body.url, shortUrl }) // urlMd collection 添加
       }
     })
